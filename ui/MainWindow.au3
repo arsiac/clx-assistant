@@ -109,7 +109,7 @@ Func _MainWindow_StartScript()
     Local $scriptNames = Common_GetAllScriptNames()
 
     For $name In $scriptNames
-        Call(Common_GetScriptFunc($name))
+        Call(Common_GetStartScriptFunc($name))
     Next
 EndFunc
 

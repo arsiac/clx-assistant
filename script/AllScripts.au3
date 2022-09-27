@@ -4,4 +4,5 @@
 #ce
 
 #include-once
-#include "SectsTaskScript.au3"
+#include "YmjhScript_SectsTask.au3"
+#include "YmjhScript_Reword.au3"
