@@ -4,7 +4,11 @@
 #ce
 
 #include-once
-#include "../Logger.au3"
+
+; 是否为空字符串
+Func DataUtils_IsEmptyString($val)
+    Return $val = Null OR $val = ""
+EndFunc ;==>DataUtils_IsEmptyString
 
 ; 转换为布尔值
 Func DataUtils_ToBool($val)
