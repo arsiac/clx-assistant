@@ -20,7 +20,7 @@ Func SettingWindow_CreateWindow($parent)
     LogTrace("Create SettingWindow")
     $sw_parentWindow = $parent
     ; 设置子窗口
-    Local $winStyle = BitOR($WS_CAPTION, $WS_CHILDWINDOW, $WS_POPUP, $WS_THICKFRAME)
+    Local $winStyle = BitOR($WS_CAPTION, $WS_CHILDWINDOW, $WS_POPUPWINDOW)
     $sw_thisWindow = GUICreate("设置", $WINDOW_SET_WIDTH, $WINDOW_SET_HEIGHT, -1, -1, $winStyle, -1, $parent)
     GUISetOnEvent($GUI_EVENT_CLOSE, "_SettingWindow_CloseWindow", $sw_thisWindow)
 

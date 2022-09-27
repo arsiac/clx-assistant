@@ -20,7 +20,7 @@ Func TaskWindow_CreateWindow($parent)
     LogTrace("Create TaskWindow")
     $tw_parentWindow = $parent
     ; 设置子窗口
-    Local $winStyle = BitOR($WS_CAPTION, $WS_CHILDWINDOW, $WS_POPUP, $WS_THICKFRAME)
+    Local $winStyle = BitOR($WS_CAPTION, $WS_CHILDWINDOW, $WS_POPUPWINDOW)
     $tw_thisWindow = GUICreate("任务管理", $WINDOW_TASK_WIDTH, $WINDOW_TASK_HEIGHT, -1, -1, $winStyle, -1, $parent)
     GUISetOnEvent($GUI_EVENT_CLOSE, "_TaskWindow_CloseWindow", $tw_thisWindow)
 
@@ -28,6 +28,7 @@ Func TaskWindow_CreateWindow($parent)
     GUICtrlSetFont($labelTasks, $FONT_COMMON_SIZE, $FW_NORMAL)
     ; 可选任务
     $tw_scriptList = GUICtrlCreateList("", 5, 30, $CTRL_LISTBOX_W_WIDTH, 240)
+    GUICtrlSetOnEvent($tw_scriptList, "_TaskWindow_ScriptList")
     GUICtrlSetLimit($tw_scriptList, 200)
     For $sName In Common_GetAllScriptNames()
         GUICtrlSetData($tw_scriptList, $sName)
@@ -51,3 +52,8 @@ Func _TaskWindow_CloseWindow()
     GUISetState(@SW_ENABLE, $tw_parentWindow)
     GUISetState(@SW_RESTORE, $tw_parentWindow)
 EndFunc ;==>_TaskWindow_CloseWindow
+
+; 脚本列表
+Func _TaskWindow_ScriptList()
+    LogDebug("TW_ScriptList")
+EndFunc
