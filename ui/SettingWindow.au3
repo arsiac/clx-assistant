@@ -66,8 +66,8 @@ Func _SettingWindow_CreateTabItem_Reword($tab)
     GUICtrlCreateGroup("悬赏副本", 5, 30, $WINDOW_SET_WIDTH - 10, 80)
     Local $colCount, $rowCount, $row = 1
     For $i = 0 To UBound($sw_allGundeons) - 1
-        $colCount = Mod($i, 6)
-        $rowCount = Floor($i / 6)
+        $colCount = Mod($i, 5)
+        $rowCount = Floor($i / 5)
         Local $x, $y
         $x = 10 + $colCount * $CTRL_CHECKBOX_WIDTH
         $y = 45 + $rowCount * $CTRL_CHECKBOX_HEIGHT

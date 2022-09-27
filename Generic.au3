@@ -22,7 +22,7 @@ Global Const $WINDOW_SET_HEIGHT = 300
 Global Const $CTRL_LABEL_WIDTH = 60
 Global Const $CTRL_LABEL_W_WIDTH = 80
 Global Const $CTRL_COMBO_WIDTH = 80
-Global Const $CTRL_CHECKBOX_WIDTH = 80
+Global Const $CTRL_CHECKBOX_WIDTH = 90
 Global Const $CTRL_CHECKBOX_HEIGHT = 25
 Global Const $CTRL_COMMON_HEIGHT = 28
 
