@@ -1,3 +1,8 @@
+#cs 
+    @filename:    GameGundeon.au3
+    @description: 游戏副本数据管理
+#ce
+
 #include-once
 #include "CommonDB.au3"
 

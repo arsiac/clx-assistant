@@ -1,6 +1,8 @@
 #cs 
-    游戏页面工具
+    @filename:    PageUtils.au3
+    @description: 游戏页面工具
 #ce
+
 #include-once
 #include "../Logger.au3"
 

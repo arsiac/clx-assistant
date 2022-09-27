@@ -1,3 +1,8 @@
+#cs 
+    @filename:    SettingWindow.au3
+    @description: 助手设置管理子窗口
+#ce
+
 #include-once
 #include <GUIConstantsEx.au3>
 #include <WindowsConstants.au3>
@@ -7,10 +12,12 @@
 #include "../db/Setting.au3"
 #include "../db/GameGundeon.au3"
     
-Local $sw_parentWindow = Null, $sw_thisWindow = Null
+Local $sw_parentWindow, $sw_thisWindow
 Local $sw_allGundeons, $sw_gundeonCtrlMap[]
 
+; 创建设置窗口
 Func SettingWindow_CreateWindow($parent)
+    LogTrace("Create SettingWindow")
     $sw_parentWindow = $parent
     ; 设置子窗口
     Local $winStyle = BitOR($WS_CAPTION, $WS_CHILDWINDOW, $WS_POPUP, $WS_THICKFRAME)

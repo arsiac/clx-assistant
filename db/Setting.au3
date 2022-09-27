@@ -1,3 +1,8 @@
+#cs 
+    @filename:    Setting.au3
+    @description: 脚本设置数据管理
+#ce
+
 #include-once
 #include "CommonDB.au3"
 

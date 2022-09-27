@@ -1,3 +1,8 @@
+#cs 
+    @filename:    CommonDb.au3
+    @description: SQLite 数据库管理
+#ce
+
 #include-once
 #include <SQLite.au3>
 #include <MsgBoxConstants.au3>

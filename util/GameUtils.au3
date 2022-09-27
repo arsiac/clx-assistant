@@ -1,5 +1,6 @@
 #cs 
-    游戏工具
+    @filename:    GameUtils.au3
+    @description: 游戏工具
 #ce
 
 Global Const $GAME_WINDOW_WIDTH = 1200

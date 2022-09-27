@@ -1,6 +1,8 @@
 #cs 
-    通用脚本
+    @filename:    ScriptManager.au3
+    @description: 脚本管理
 #ce
+
 #include-once
 ;~ #RequireAdmin
 #include <Array.au3>
@@ -10,22 +12,20 @@
 
 ; 脚本信息
 Local Const $sm_arrayRaise = 10
-Local $sm_arraySize = 10
-Local $sm_arrayIndex = 0
-Local $sm_scriptNameArray[$sm_arraySize] = []
-Local $sm_scriptFuncArray[$sm_arraySize] = []
+Local $sm_scriptNameArray[0] = []
+Local $sm_scriptFuncArray[0] = []
 
 ; 注册脚本
 Func Common_ScriptRegister($name, $func)
+    LogTest("Script reg: " & $name & ", " & $func)
     Local $size = UBound($sm_scriptNameArray)
-    If $sm_arrayIndex = $sm_arraySize - 1 Then
-        Redim $sm_scriptNameArray[$sm_arraySize + $sm_arrayRaise]
-        Redim $sm_scriptFuncArray[$sm_arraySize + $sm_arrayRaise]
-    EndIf
+    Redim $sm_scriptNameArray[$size + 1]
+    Redim $sm_scriptFuncArray[$size + 1]
 
-    $sm_scriptNameArray[$sm_arrayIndex] = $name
-    $sm_scriptFuncArray[$sm_arrayIndex] = $func
-    $sm_arrayIndex = $sm_arrayIndex + 1
+    $sm_scriptNameArray[$size] = $name
+    $sm_scriptFuncArray[$size] = $func
+    Local $debugMsg[] = ["Script register: ", $name, ", ", $func]
+    LogTest($debugMsg)
 EndFunc ;==>Common_ScriptRegister
 
 ; 获取所有脚本名称

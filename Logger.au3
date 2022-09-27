@@ -1,3 +1,8 @@
+#cs 
+    @filename:    Logger.au3
+    @description: 助手日志输出
+#ce
+
 #include-once
 #include <GuiListBox.au3>
 #include "util/DataUtils.au3"
@@ -11,7 +16,7 @@ Global Const $LOGLEVEL_ERROR = 4
 Local $logger_LogLevelNameArray[] = ["Trace", "Debug", "Info", "Warn", "Error"]
 
 ; 启用控制台输出
-Local $logger_consoleEnable = False
+Local $logger_consoleEnable = False, $logger_testEnable = True
 
 ; 日志级别
 Local $logger_level = $LOGLEVEL_INFO
@@ -106,7 +111,13 @@ EndFunc
 
 Func LogError($msg)
     If $LOGLEVEL_ERROR >= $logger_level Then
-        _Logger_Output("[ERROR] " & _Logger_ResolveMsg($msg), True)
+        _Logger_Output("[Error] " & _Logger_ResolveMsg($msg), True)
+    EndIf
+EndFunc
+
+Func LogTest($msg)
+    If $logger_testEnable Then
+        _Logger_Output("[Test ] " & _Logger_ResolveMsg($msg))
     EndIf
 EndFunc
 

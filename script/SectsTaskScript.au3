@@ -1,7 +1,8 @@
-#cs
-    一梦江湖脚本
-    脚本名称: 门派任务
+#cs 
+    @filename:    SectsTaskScript.au3
+    @description: 门派任务脚本
 #ce
+
 #include-once
 #include "ScriptManager.au3"
 
