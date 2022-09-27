@@ -20,7 +20,7 @@ Func TaskWindow_CreateWindow($parent)
     LogTrace("Create TaskWindow")
     $tw_parentWindow = $parent
     ; 设置子窗口
-    Local $winStyle = BitAND($WS_OVERLAPPEDWINDOW, $WS_THICKFRAME)
+    Local $winStyle = BitXOR($WS_OVERLAPPEDWINDOW, $WS_THICKFRAME)
     $tw_thisWindow = GUICreate("任务管理", $WINDOW_TASK_WIDTH, $WINDOW_TASK_HEIGHT, -1, -1, $winStyle, -1, $parent)
     GUISetOnEvent($GUI_EVENT_CLOSE, "_TaskWindow_CloseWindow", $tw_thisWindow)
 
