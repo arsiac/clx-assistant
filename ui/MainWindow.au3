@@ -26,7 +26,7 @@ Func MainWindow_CreateWindow()
     ; 主窗口: 任务选择下拉框
     $mwc_taskCombo = GUICtrlCreateCombo("", 5, 5, 120, 30, $CBS_DROPDOWNLIST)
     GUICtrlSetOnEvent($mwc_taskCombo, "_Evt_MainWindow_RefeashScriptList")
-    _MainWindow_LoadUserTasks()
+    _MainWindow_LoadUserTasks(True)
 
     ; 主窗口: 任务列表
     $mwc_scriptList = GUICtrlCreateList("", 5, 30, 120, 285)
@@ -62,9 +62,16 @@ Func MainWindow_CreateWindow()
 EndFunc ;==>MainWindow_CreateWindow
 
 ; 加载用户任务
-Func _MainWindow_LoadUserTasks()
+Func _MainWindow_LoadUserTasks($fromMemory = False)
     LogDebug("Refeash task combo.")
-    Local $task = GUICtrlRead($mwc_taskCombo)
+
+    Local $task
+    If $fromMemory Then
+        $task = QueryScriptSettingValue($CGGP_COMMON, $CG_COMMON_TASK)
+    Else
+        $task = GUICtrlRead($mwc_taskCombo)
+    EndIf
+    
     Local $tasks = SelectAllUserTasks()
     For $t In $tasks
         GUICtrlSetData($mwc_taskCombo, $t)
@@ -108,6 +115,7 @@ Func _Evt_MainWindow_RefeashScriptList()
         Return
     EndIf
 
+    SaveScriptSetting($CGGP_COMMON, $CG_COMMON_TASK, $selectedTask)
     Local $scripts = SelectUserTaskItemByName($selectedTask)
     GUICtrlSetData($mwc_scriptList, "")
     For $s In $scripts

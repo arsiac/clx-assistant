@@ -53,5 +53,6 @@ Global Const $FONT_LOG_SIZE = 9
 Global Const $CGGP_COMMON = "common"
 Global Const $CG_COMMON_LOGLEVEL = "logger.level"
 Global Const $CG_COMMON_CONSOLE = "logger.console.enable"
+Global Const $CG_COMMON_TASK = "user.memory.task-name"
 
 Global Const $CGGP_REWORD = "reword"
