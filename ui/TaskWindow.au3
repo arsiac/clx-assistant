@@ -51,7 +51,7 @@ Func TaskWindow_CreateWindow($parent)
     ; 手动触发一次刷新
     _TaskWindow_LoadUserTaskItems(GUICtrlRead($tw_taskCombo))
     Return $tw_thisWindow
-EndFunc ;==>SettingWindow_CreateWindow\
+EndFunc ;==>SettingWindow_CreateWindow
 
 ; 设置父级窗口刷新方法
 Func TaskWindow_SetParentRefeashFunc($func)
@@ -95,6 +95,7 @@ Func _TaskWindow_NewUserTask()
 
         local $taskDesc = @UserName & ": " & @YEAR & "-" & @MON & "-" & @MDAY & " " & @HOUR & ":" & @MIN & ":" & @SEC
         InsertUserTask($taskName, $taskDesc)
+        GUICtrlSetData($tw_taskItemList, "")
     EndIf
     Return $taskName
 EndFunc ;==>_TaskWindow_NewUserTask
