@@ -20,7 +20,7 @@ Local $tw_funcRefeashParent = Null
 Func TaskWindow_CreateWindow($parent)
     LogTrace("Create TaskWindow")
     $tw_parentWindow = $parent
-    ; 设置子窗口
+    ; 任务子窗口
     Local $winStyle = BitXOR($WS_OVERLAPPEDWINDOW, $WS_THICKFRAME)
     $tw_thisWindow = GUICreate("任务管理", $WINDOW_TASK_WIDTH, $WINDOW_TASK_HEIGHT, -1, -1, $winStyle, -1, $parent)
     GUISetOnEvent($GUI_EVENT_CLOSE, "_Evt_TaskWindow_CloseWindow", $tw_thisWindow)
@@ -28,6 +28,7 @@ Func TaskWindow_CreateWindow($parent)
     ; 可选任务
     Local $labelTasks = GUICtrlCreateLabel("可选任务", 35, 10, $CTRL_LABEL_WIDTH, $CTRL_COMMON_HEIGHT - 5)
     $tw_scriptList = GUICtrlCreateList("", 5, 30, $CTRL_LISTBOX_W_WIDTH, 240)
+    _GUICtrlListBox_SetItemHeight($tw_scriptList, 18)
     GUICtrlSetLimit($tw_scriptList, 200)
     For $sName In Common_GetAllScriptNames()
         GUICtrlSetData($tw_scriptList, $sName)
@@ -47,6 +48,7 @@ Func TaskWindow_CreateWindow($parent)
 
     ; 任务明细
     $tw_taskItemList = GUICtrlCreateList("", $CTRL_LISTBOX_W_WIDTH + 75, 30, $CTRL_LISTBOX_W_WIDTH, 240)
+    _GUICtrlListBox_SetItemHeight($tw_taskItemList, 18)
 
     ; 手动触发一次刷新
     _TaskWindow_LoadUserTaskItems(GUICtrlRead($tw_taskCombo))

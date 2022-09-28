@@ -7,6 +7,7 @@
 #include <GUIConstantsEx.au3>
 #include "SettingWindow.au3"
 #include "TaskWindow.au3"
+#include "MultiGameWindow.au3"
 #include "../Generic.au3"
 #include "../Logger.au3"
 #include "../db/CommonDb.au3"
@@ -25,12 +26,14 @@ Func MainWindow_CreateWindow()
 
     ; 主窗口: 任务选择下拉框
     $mwc_taskCombo = GUICtrlCreateCombo("", 5, 5, 120, 30, $CBS_DROPDOWNLIST)
+    GUICtrlSetTip($mwc_taskCombo, "任务列表")
     GUICtrlSetOnEvent($mwc_taskCombo, "_Evt_MainWindow_RefeashScriptList")
     _MainWindow_LoadUserTasks(True)
 
     ; 主窗口: 任务列表
     $mwc_scriptList = GUICtrlCreateList("", 5, 30, 120, 285)
     GUICtrlSetLimit($mwc_scriptList, 200)
+    _GUICtrlListBox_SetItemHeight($mwc_scriptList, 18)
     _MainWindow_LoadUserTaskItems()
 
     ; 主窗口: 日志列表
@@ -99,6 +102,30 @@ Func _MainWindow_LoadUserTaskItems()
     Next
 EndFunc ;==>_MainWindow_LoadUserTaskItems
 
+; 转换按钮状态
+Func _MainWindow_ToggleButton($scriptStarted)
+    If $scriptStarted Then
+        GUICtrlSetState($mw_startButton, $GUI_DISABLE)
+        GUICtrlSetState($mw_stopButton, $GUI_ENABLE)
+    Else
+        GUICtrlSetState($mw_stopButton, $GUI_DISABLE)
+        GUICtrlSetState($mw_startButton, $GUI_ENABLE)
+    EndIf
+EndFunc ;==>_MainWindow_ToggleButton
+
+; 开始脚本
+Func _MainWindow_Start($winHandle)
+    Local $res = GUICtrlRead($mwc_scriptList)
+    LogInfo("start: " & $res)
+
+    Local $scriptNames = Common_GetAllScriptNames()
+
+    _MainWindow_ToggleButton(True)
+    For $name In $scriptNames
+        Call(Common_GetStartScriptFunc($name))
+    Next
+EndFunc ;==>_MainWindow_Start
+
 
 #cs ----------------------------------------------------------------------------------
     窗口事件函数
@@ -108,11 +135,11 @@ EndFunc ;==>_MainWindow_LoadUserTaskItems
 Func _Evt_MainWindow_CloseWindow()
     Local $userRes = MsgBox(1, "提示", "确认退" & $APP_NAME & "吗?")
     If $userRes <> 1 Then
-        LogDebug("User Canceled.")
+        LogTrace("User Canceled.")
         Return
     EndIf
 
-    LogDebug("Close MainWindow.")
+    LogTrace("Close MainWindow.")
     DestoryDb()
     GUIDelete($mw_thisWindow)
     If $mw_settingWindow <> Null Then
@@ -134,7 +161,7 @@ Func _Evt_MainWindow_OpenSettingWindow()
     If $mw_settingWindow = Null Then
         $mw_settingWindow = SettingWindow_CreateWindow($mw_thisWindow)
     EndIf
-    LogDebug("Open SettingWindow, disable MainWindow.")
+    LogTrace("Open SettingWindow, disable MainWindow.")
     GUISetState(@SW_DISABLE, $mw_thisWindow)
     GUISetState(@SW_SHOW, $mw_settingWindow)
 EndFunc
@@ -145,29 +172,30 @@ Func _Evt_MainWindow_OpenTaskWindow()
         $mw_taskWindow = TaskWindow_CreateWindow($mw_thisWindow)
         TaskWindow_SetParentRefeashFunc("_MainWindow_LoadUserTasks")
     EndIf
-    LogDebug("Open SettingWindow, disable MainWindow.")
+    LogTrace("Open SettingWindow, disable MainWindow.")
     GUISetState(@SW_DISABLE, $mw_thisWindow)
     GUISetState(@SW_SHOW, $mw_taskWindow)
 EndFunc ;==>_MainWindow_OpenTaskWindow
 
 ; 执行脚本
 Func _Evt_MainWindow_StartScript()
-    GUICtrlSetState($mw_startButton, $GUI_DISABLE)
-    GUICtrlSetState($mw_stopButton, $GUI_ENABLE)
-    LogInfo("StartScript")
-    Local $res = GUICtrlRead($mwc_scriptList)
-    LogInfo("start: " & $res)
+    Local $wins = WinList("[CLASS:" & $GAME_CLASS & "]")
+    Local $winCount = $wins[0][0]
+    If $winCount = 0 Then
+        MsgBox(0, "提示", "游戏未运行")
+        Return
+    EndIf
 
-    Local $scriptNames = Common_GetAllScriptNames()
-
-    For $name In $scriptNames
-        Call(Common_GetStartScriptFunc($name))
-    Next
+    If $winCount > 1 Then
+         MultiGameWindow_CreateWindow($mw_thisWindow, $wins)
+         MultiGameWindow_SetStartScriptFunc("_MainWindow_Start")
+         Return
+    EndIf
+    _MainWindow_Start($wins[1][1])
 EndFunc ;==>_MainWindow_StartScript
 
 ; 执行脚本
 Func _Evt_MainWindow_StopScript()
-    GUICtrlSetState($mw_stopButton, $GUI_DISABLE)
-    GUICtrlSetState($mw_startButton, $GUI_ENABLE)
+    _MainWindow_ToggleButton(False)
     LogInfo("StopScript")
 EndFunc ;==>_MainWindow_StopScript

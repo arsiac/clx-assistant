@@ -19,6 +19,8 @@ Global Const $APP_NAME = "一梦江湖助手"
 
 ; Game
 Global Const $GAME_NAME = "一梦江湖"
+;~ Global Const $GAME_CLASS = "Messiah_Game"
+Global Const $GAME_CLASS = "Notepad"
 
 ; Window
 Global Const $WINDOW_MAIN_WIDTH = 600
@@ -27,6 +29,8 @@ Global Const $WINDOW_SET_WIDTH = 500
 Global Const $WINDOW_SET_HEIGHT = 300
 Global Const $WINDOW_TASK_WIDTH = 320
 Global Const $WINDOW_TASK_HEIGHT = 300
+Global Const $WINDOW_MULTI_WIDTH = 250
+Global Const $WINDOW_MULTI_HEIGHT = 250
 
 ; Control
 Global Const $CTRL_LABEL_WIDTH = 60
