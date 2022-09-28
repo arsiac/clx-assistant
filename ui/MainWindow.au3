@@ -31,6 +31,7 @@ Func MainWindow_CreateWindow()
     ; 主窗口: 任务列表
     $mwc_scriptList = GUICtrlCreateList("", 5, 30, 120, 285)
     GUICtrlSetLimit($mwc_scriptList, 200)
+    _MainWindow_LoadUserTaskItems()
 
     ; 主窗口: 日志列表
     Local $logSize = 100
@@ -82,6 +83,22 @@ Func _MainWindow_LoadUserTasks($fromMemory = False)
     EndIf
 EndFunc ;==>_MainWindow_LoadUserTasks
 
+; 加载任务明细
+Func _MainWindow_LoadUserTaskItems()
+    Local $selectedTask = GUICtrlRead($mwc_taskCombo)
+    If DataUtils_IsEmptyString($selectedTask) Then
+        LogDebug("No task was selected, cancel refeash script list.")
+        Return
+    EndIf
+
+    SaveScriptSetting($CGGP_COMMON, $CG_COMMON_TASK, $selectedTask)
+    Local $scripts = SelectUserTaskItemByName($selectedTask)
+    GUICtrlSetData($mwc_scriptList, "")
+    For $s In $scripts
+        GUICtrlSetData($mwc_scriptList, $s)
+    Next
+EndFunc ;==>_MainWindow_LoadUserTaskItems
+
 
 #cs ----------------------------------------------------------------------------------
     窗口事件函数
@@ -109,18 +126,7 @@ EndFunc ;==>_MainWindow_CloseWindow
 
 ; 刷新脚本列表
 Func _Evt_MainWindow_RefeashScriptList()
-    Local $selectedTask = GUICtrlRead($mwc_taskCombo)
-    If DataUtils_IsEmptyString($selectedTask) Then
-        LogDebug("No task was selected, cancel refeash script list.")
-        Return
-    EndIf
-
-    SaveScriptSetting($CGGP_COMMON, $CG_COMMON_TASK, $selectedTask)
-    Local $scripts = SelectUserTaskItemByName($selectedTask)
-    GUICtrlSetData($mwc_scriptList, "")
-    For $s In $scripts
-        GUICtrlSetData($mwc_scriptList, $s)
-    Next
+    _MainWindow_LoadUserTaskItems()
 EndFunc ;==>_Evt_MainWindow_RefeashScriptList
 
 ; 打开设置窗口, 禁用主窗口
