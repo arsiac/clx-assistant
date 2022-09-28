@@ -19,8 +19,8 @@ Global Const $APP_NAME = "一梦江湖助手"
 
 ; Game
 Global Const $GAME_NAME = "一梦江湖"
-;~ Global Const $GAME_CLASS = "Messiah_Game"
-Global Const $GAME_CLASS = "Notepad"
+Global Const $GAME_CLASS = "Messiah_Game"
+;~ Global Const $GAME_CLASS = "Notepad"
 
 ; Window
 Global Const $WINDOW_MAIN_WIDTH = 600

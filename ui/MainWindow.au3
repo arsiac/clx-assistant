@@ -13,6 +13,7 @@
 #include "../db/CommonDb.au3"
 #include "../db/UserTask.au3"
 #include "../script/AllScripts.au3"
+#include "../util/DataUtils.au3"
 
 Local $mw_thisWindow = Null, $mwc_scriptList = Null, $mwc_taskCombo = Null
 Local $mw_settingWindow = Null, $mw_taskWindow = Null
@@ -32,6 +33,7 @@ Func MainWindow_CreateWindow()
 
     ; 主窗口: 任务列表
     $mwc_scriptList = GUICtrlCreateList("", 5, 30, 120, 285)
+    GUICtrlSetTip($mwc_scriptList, "脚本会从被选择的任务开始执行")
     GUICtrlSetLimit($mwc_scriptList, 200)
     _GUICtrlListBox_SetItemHeight($mwc_scriptList, 18)
     _MainWindow_LoadUserTaskItems()
@@ -115,14 +117,23 @@ EndFunc ;==>_MainWindow_ToggleButton
 
 ; 开始脚本
 Func _MainWindow_Start($winHandle)
-    Local $res = GUICtrlRead($mwc_scriptList)
-    LogInfo("start: " & $res)
+    Local $taskName = GUICtrlRead($mwc_taskCombo)
+    Local $selectedScript = GUICtrlRead($mwc_scriptList)
+    Local $scripts = SelectUserTaskItemByName($taskName)
+    Local $index = 0
 
-    Local $scriptNames = Common_GetAllScriptNames()
+    If Not DataUtils_IsEmptyString($selectedScript) Then
+        For $i = 0 To UBound($scripts) - 1
+            If $scripts[$i] = $selectedScript Then
+                $index = $i
+                ExitLoop
+            EndIf
+        Next
+    EndIf
 
     _MainWindow_ToggleButton(True)
-    For $name In $scriptNames
-        Call(Common_GetStartScriptFunc($name))
+    For $i = $index To UBound($scripts) - 1
+        Call(Common_GetStartScriptFunc($scripts[$i]))
     Next
 EndFunc ;==>_MainWindow_Start
 
@@ -164,7 +175,7 @@ Func _Evt_MainWindow_OpenSettingWindow()
     LogTrace("Open SettingWindow, disable MainWindow.")
     GUISetState(@SW_DISABLE, $mw_thisWindow)
     GUISetState(@SW_SHOW, $mw_settingWindow)
-EndFunc
+EndFunc ;==>_Evt_MainWindow_OpenSettingWindow
 
 ; 打开任务窗口, 禁用主窗口
 Func _Evt_MainWindow_OpenTaskWindow()
@@ -175,7 +186,7 @@ Func _Evt_MainWindow_OpenTaskWindow()
     LogTrace("Open SettingWindow, disable MainWindow.")
     GUISetState(@SW_DISABLE, $mw_thisWindow)
     GUISetState(@SW_SHOW, $mw_taskWindow)
-EndFunc ;==>_MainWindow_OpenTaskWindow
+EndFunc ;==>_Evt_MainWindow_OpenTaskWindow
 
 ; 执行脚本
 Func _Evt_MainWindow_StartScript()
@@ -192,10 +203,10 @@ Func _Evt_MainWindow_StartScript()
          Return
     EndIf
     _MainWindow_Start($wins[1][1])
-EndFunc ;==>_MainWindow_StartScript
+EndFunc ;==>_Evt_MainWindow_StartScript
 
 ; 执行脚本
 Func _Evt_MainWindow_StopScript()
     _MainWindow_ToggleButton(False)
     LogInfo("StopScript")
-EndFunc ;==>_MainWindow_StopScript
+EndFunc ;==>_Evt_MainWindow_StopScript
