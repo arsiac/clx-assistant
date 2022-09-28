@@ -9,16 +9,20 @@
 #include "script/AllScripts.au3"
 #include "ui/MainWindow.au3"
 
-InitializeDb()
-SetLogLevelByName(QueryScriptSettingValue($CGGP_COMMON, $CG_COMMON_LOGLEVEL))
-Logger_SetConsoleEnable(QueryScriptSettingValue($CGGP_COMMON, $CG_COMMON_CONSOLE))
+Main()
 
-; 显示窗口
-GUISetState(@SW_SHOW, MainWindow_CreateWindow())
+Func Main()
+    InitializeDb()
+    SetLogLevelByName(QueryScriptSettingValue($CGGP_COMMON, $CG_COMMON_LOGLEVEL))
+    Logger_SetConsoleEnable(QueryScriptSettingValue($CGGP_COMMON, $CG_COMMON_CONSOLE))
 
-LogDebug("Running: " & @ScriptDir)
+    ; 显示窗口
+    GUISetState(@SW_SHOW, MainWindow_CreateWindow())
 
-; 防止程序退出
-While True
-    Sleep(1000)
-WEnd
+    LogDebug("Running: " & @ScriptDir)
+
+    ; 防止程序退出
+    While True
+        Sleep(1000)
+    WEnd
+EndFunc ;==>Main

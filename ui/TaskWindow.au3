@@ -14,6 +14,7 @@
 
 Local $tw_parentWindow, $tw_thisWindow
 Local $tw_scriptList, $tw_taskCombo, $tw_taskItemList
+Local $tw_funcRefeashParent = Null
 
 ; 创建任务窗口
 Func TaskWindow_CreateWindow($parent)
@@ -50,7 +51,12 @@ Func TaskWindow_CreateWindow($parent)
     ; 手动触发一次刷新
     _TaskWindow_LoadUserTaskItems(GUICtrlRead($tw_taskCombo))
     Return $tw_thisWindow
-EndFunc ;==>SettingWindow_CreateWindow
+EndFunc ;==>SettingWindow_CreateWindow\
+
+; 设置父级窗口刷新方法
+Func TaskWindow_SetParentRefeashFunc($func)
+    $tw_funcRefeashParent = $func;
+EndFunc ;==>TaskWindow_SetParentRefeashFunc
 
 ; 加载所有任务
 Func _TaskWindow_LoadUserTasks()
@@ -98,12 +104,15 @@ EndFunc ;==>_TaskWindow_NewUserTask
     事件函数
 #ce ------------------------------------------------------
 
-; 关闭设置窗口, 激活主窗口
+; 关闭任务窗口, 激活主窗口
 Func _Evt_TaskWindow_CloseWindow()
     LogTrace("Hide TaskWindow, enable MainWindow.")
     GUISetState(@SW_HIDE, $tw_thisWindow)
     GUISetState(@SW_ENABLE, $tw_parentWindow)
     GUISetState(@SW_RESTORE, $tw_parentWindow)
+    If Not DataUtils_IsEmptyString($tw_funcRefeashParent) Then
+        Call($tw_funcRefeashParent)
+    EndIf
 EndFunc ;==>_Evt_TaskWindow_CloseWindow
 
 ; 下拉框事件

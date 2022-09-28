@@ -10,9 +10,10 @@
 #include "../Generic.au3"
 #include "../Logger.au3"
 #include "../db/CommonDb.au3"
+#include "../db/UserTask.au3"
 #include "../script/AllScripts.au3"
 
-Local $mw_thisWindow = Null, $mwc_listTasks = Null
+Local $mw_thisWindow = Null, $mwc_scriptList = Null, $mwc_taskCombo = Null
 Local $mw_settingWindow = Null, $mw_taskWindow = Null
 Local $mw_startButton = Null, $mw_stopButton = Null
 
@@ -20,14 +21,16 @@ Local $mw_startButton = Null, $mw_stopButton = Null
 Func MainWindow_CreateWindow()
     ; 主窗口
     $mw_thisWindow = GUICreate($APP_NAME, $WINDOW_MAIN_WIDTH, $WINDOW_MAIN_HEIGHT)
-    GUISetOnEvent($GUI_EVENT_CLOSE, "_MainWindow_CloseWindow")
+    GUISetOnEvent($GUI_EVENT_CLOSE, "_Evt_MainWindow_CloseWindow")
 
     ; 主窗口: 任务选择下拉框
-    Local $comboTasks = GUICtrlCreateCombo("", 5, 5, 120, 30, $CBS_DROPDOWNLIST)
+    $mwc_taskCombo = GUICtrlCreateCombo("", 5, 5, 120, 30, $CBS_DROPDOWNLIST)
+    GUICtrlSetOnEvent($mwc_taskCombo, "_Evt_MainWindow_RefeashScriptList")
+    _MainWindow_LoadUserTasks()
 
     ; 主窗口: 任务列表
-    $mwc_listTasks = GUICtrlCreateList("", 5, 30, 120, 285)
-    GUICtrlSetLimit($mwc_listTasks, 200)
+    $mwc_scriptList = GUICtrlCreateList("", 5, 30, 120, 285)
+    GUICtrlSetLimit($mwc_scriptList, 200)
 
     ; 主窗口: 日志列表
     Local $logSize = 100
@@ -35,31 +38,50 @@ Func MainWindow_CreateWindow()
     GUICtrlSetFont($listLog, $FONT_LOG_SIZE, $FW_NORMAL)
     GUICtrlSetBkColor($listLog, 0x25292e)
     GUICtrlSetColor($listLog, 0xe2d9dc)
-    GUICtrlSetLimit($mwc_listTasks, $logSize)
+    GUICtrlSetLimit($mwc_scriptList, $logSize)
     Logger_SetLogCtrl($listLog, $logSize)
 
     ; 主窗口: 开始按钮
     $mw_startButton = GUICtrlCreateButton("开始", 5, 320, $BUTTON_MIN_WIDTH, $BUTTON_COMMON_HEIGHT)
-    GUICtrlSetOnEvent($mw_startButton, "_MainWindow_StartScript")
+    GUICtrlSetOnEvent($mw_startButton, "_Evt_MainWindow_StartScript")
     
     ; 主窗口: 停止按钮
     $mw_stopButton = GUICtrlCreateButton("停止", 80, 320, $BUTTON_MIN_WIDTH, $BUTTON_COMMON_HEIGHT)
-    GUICtrlSetOnEvent($mw_stopButton, "_MainWindow_StopScript")
+    GUICtrlSetOnEvent($mw_stopButton, "_Evt_MainWindow_StopScript")
     GUICtrlSetState($mw_stopButton, $GUI_DISABLE)
 
     ; 主窗口: 设置
     Local $btnSetting = GUICtrlCreateButton("设置", 155, 320, $BUTTON_MIN_WIDTH, $BUTTON_COMMON_HEIGHT)
-    GUICtrlSetOnEvent($btnSetting, "_MainWindow_OpenSettingWindow")
+    GUICtrlSetOnEvent($btnSetting, "_Evt_MainWindow_OpenSettingWindow")
     
     ; 主窗口: 任务
     Local $btnTask = GUICtrlCreateButton("任务", 230, 320, $BUTTON_MIN_WIDTH, $BUTTON_COMMON_HEIGHT)
-    GUICtrlSetOnEvent($btnTask, "_MainWindow_OpenTaskWindow")
+    GUICtrlSetOnEvent($btnTask, "_Evt_MainWindow_OpenTaskWindow")
 
     Return $mw_thisWindow
 EndFunc ;==>MainWindow_CreateWindow
 
+; 加载用户任务
+Func _MainWindow_LoadUserTasks()
+    LogDebug("Refeash task combo.")
+    Local $task = GUICtrlRead($mwc_taskCombo)
+    Local $tasks = SelectAllUserTasks()
+    For $t In $tasks
+        GUICtrlSetData($mwc_taskCombo, $t)
+    Next
+
+    If Not DataUtils_IsEmptyString($task) Then
+        _GUICtrlComboBox_SelectString($mwc_taskCombo, $task)
+    EndIf
+EndFunc ;==>_MainWindow_LoadUserTasks
+
+
+#cs ----------------------------------------------------------------------------------
+    窗口事件函数
+#ce ----------------------------------------------------------------------------------
+
 ; 关闭主窗口
-Func _MainWindow_CloseWindow()
+Func _Evt_MainWindow_CloseWindow()
     Local $userRes = MsgBox(1, "提示", "确认退" & $APP_NAME & "吗?")
     If $userRes <> 1 Then
         LogDebug("User Canceled.")
@@ -76,10 +98,25 @@ Func _MainWindow_CloseWindow()
         GUIDelete($mw_taskWindow)
     EndIf
     Exit 0
-EndFunc
+EndFunc ;==>_MainWindow_CloseWindow
+
+; 刷新脚本列表
+Func _Evt_MainWindow_RefeashScriptList()
+    Local $selectedTask = GUICtrlRead($mwc_taskCombo)
+    If DataUtils_IsEmptyString($selectedTask) Then
+        LogDebug("No task was selected, cancel refeash script list.")
+        Return
+    EndIf
+
+    Local $scripts = SelectUserTaskItemByName($selectedTask)
+    GUICtrlSetData($mwc_scriptList, "")
+    For $s In $scripts
+        GUICtrlSetData($mwc_scriptList, $s)
+    Next
+EndFunc ;==>_Evt_MainWindow_RefeashScriptList
 
 ; 打开设置窗口, 禁用主窗口
-Func _MainWindow_OpenSettingWindow()
+Func _Evt_MainWindow_OpenSettingWindow()
     If $mw_settingWindow = Null Then
         $mw_settingWindow = SettingWindow_CreateWindow($mw_thisWindow)
     EndIf
@@ -89,21 +126,22 @@ Func _MainWindow_OpenSettingWindow()
 EndFunc
 
 ; 打开任务窗口, 禁用主窗口
-Func _MainWindow_OpenTaskWindow()
+Func _Evt_MainWindow_OpenTaskWindow()
     If $mw_taskWindow = Null Then
         $mw_taskWindow = TaskWindow_CreateWindow($mw_thisWindow)
+        TaskWindow_SetParentRefeashFunc("_MainWindow_LoadUserTasks")
     EndIf
     LogDebug("Open SettingWindow, disable MainWindow.")
     GUISetState(@SW_DISABLE, $mw_thisWindow)
     GUISetState(@SW_SHOW, $mw_taskWindow)
-EndFunc
+EndFunc ;==>_MainWindow_OpenTaskWindow
 
 ; 执行脚本
-Func _MainWindow_StartScript()
+Func _Evt_MainWindow_StartScript()
     GUICtrlSetState($mw_startButton, $GUI_DISABLE)
     GUICtrlSetState($mw_stopButton, $GUI_ENABLE)
     LogInfo("StartScript")
-    Local $res = GUICtrlRead($mwc_listTasks)
+    Local $res = GUICtrlRead($mwc_scriptList)
     LogInfo("start: " & $res)
 
     Local $scriptNames = Common_GetAllScriptNames()
@@ -111,11 +149,11 @@ Func _MainWindow_StartScript()
     For $name In $scriptNames
         Call(Common_GetStartScriptFunc($name))
     Next
-EndFunc
+EndFunc ;==>_MainWindow_StartScript
 
 ; 执行脚本
-Func _MainWindow_StopScript()
+Func _Evt_MainWindow_StopScript()
     GUICtrlSetState($mw_stopButton, $GUI_DISABLE)
     GUICtrlSetState($mw_startButton, $GUI_ENABLE)
     LogInfo("StopScript")
-EndFunc
+EndFunc ;==>_MainWindow_StopScript
